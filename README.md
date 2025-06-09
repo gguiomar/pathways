@@ -1,217 +1,169 @@
-# Pathway Analysis Code - Extracted and Modularized
+# Pathways - Modelling direct and indirect pathway circuits in multiple corticostriatal loops
 
-This repository contains the extracted and modularized code from the Jupyter notebook `advantage_updating_v49-finding_DMS_latent.ipynb`. The code has been reorganized into a clean, modular structure that is easier to read, maintain, and extend.
+## Overview
 
-## Project Structure
+This repository contains a version of the pathways analysis codebase from the paper XXXX.
 
-```
-pathways_extracted/
-├── README.md                    # This file
-├── main.py                      # Main demonstration script
-├── agents/                      # Agent implementations
-│   └── pathway_agents.py        # Pathway-based RL agents
-├── environments/                # Environment implementations
-│   └── timing_task_csc.py       # Classical conditioning timing task
-├── analysis/                    # Analysis modules (modular design)
-│   ├── __init__.py             # Package initialization
-│   ├── main_analysis.py        # Main analysis class (unified interface)
-│   ├── behavioral_analysis.py  # Behavioral analysis functions
-│   ├── neural_analysis.py      # Neural activity analysis functions
-│   ├── plotting.py             # Plotting utilities and visualizations
-│   └── utils.py                # Utility functions and helpers
-└── methods/                     # Additional methods and documentation
-    ├── perceptual_policy.tex    # LaTeX documentation
-    └── perceptual_policy.pdf    # Compiled PDF documentation
-```
+## Installation
 
-## Key Features
+### Setup Instructions
 
-### Modular Design
-The original monolithic analysis code has been split into focused modules:
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd pathways
+   ```
 
-- **`utils.py`**: Basic utility functions for data processing and normalization
-- **`behavioral_analysis.py`**: Functions for analyzing choice behavior, breaking fixation, and psychometric curves
-- **`neural_analysis.py`**: Functions for analyzing neural activity, action preferences, and pathway contributions
-- **`plotting.py`**: Visualization utilities and plotting functions
-- **`main_analysis.py`**: Main analysis class that combines all functionality
+2. **Create conda environment from environment.yml**
+   ```bash
+   conda env create -f environment.yml
+   ```
 
-### Clean Interface
-The `PathwayAnalysis` class provides a unified interface that replaces the original `pathway_analysis_v6` class:
-
-```python
-from analysis import PathwayAnalysis
-
-# Initialize analysis
-analyzer = PathwayAnalysis(sim_data, param)
-
-# Run comprehensive analysis
-results = analyzer.run_full_analysis(tf_m, save_plots=True)
-
-# Access specialized analyzers
-behavioral_data = analyzer.behavioral.get_psychometric_data(...)
-neural_data = analyzer.neural.sample_action_preferences_DLS(...)
-plots = analyzer.plotting.plot_psychometric_curve(...)
-```
-
-### Descriptive Names
-Functions and classes now have clear, descriptive names that indicate their purpose:
-
-- `BehavioralAnalyzer` for behavioral analysis
-- `NeuralAnalyzer` for neural activity analysis
-- `PlottingUtils` for visualization
-- `get_psychometric_data()` instead of generic function names
-- `sample_action_preferences_DLS()` for specific pathway analysis
-
-## Usage
+3. **Activate the environment**
+   ```bash
+   conda activate pathways
+   ```
 
 ### Quick Start
 
-Run the demonstration script to see the modular code in action:
+After installation, you can run the analysis in several ways:
+
+**Option 1: Interactive VSCode cells (Recommended)**
+```bash
+# Open main_simple_refactored.py in VSCode
+# Run cells individually using Ctrl+Enter
+```
+
+**Option 2: Command line**
+```bash
+python main.py              # Full pipeline
+python main.py training     # Training only
+python main.py analysis     # Analysis only
+```
+
+**Option 3: Jupyter notebook**
+```bash
+jupyter lab
+# Open and run main_simple_refactored.py as notebook
+```
+
+## Structure
+
+```
+pathways/
+├── main.py                    # Main pipeline orchestrator
+├── training.py               # Training functionality
+├── test.py                   # Test dataset creation (CONTROL)
+├── optogenetics.py          # Optogenetics experiments (DLS/DMS)
+├── perceptualpolicy.py      # Perceptual policy analysis
+├── ppolicy_utils.py         # Perceptual policy utility functions
+├── utils.py                 # Common utilities (pickle save/load, etc.)
+├── plots/                   # All generated figures
+├── simulation_data/         # Saved simulation data (pickle files)
+├── agents/
+│   └── pathway_agents.py
+├── analysis/
+│   ├── __init__.py
+│   ├── pathway_analysis.py  # Core analysis functions
+│   └── utils.py
+└── environments/
+    └── timing_task_csc.py
+```
+
+## Usage
+
+### Running the Full Pipeline
 
 ```bash
+# Run complete analysis pipeline
 python main.py
+
+# Or explicitly specify full mode
+python main.py full
 ```
 
-This will:
-1. Set up simulation parameters
-2. Run a pathway agent simulation
-3. Analyze results using the modular tools
-4. Generate comprehensive plots
-5. Save results and individual visualizations
+### Running Individual Components
 
-### Basic Usage
+```bash
+# Training only
+python main.py training
+
+# Analysis only (requires existing training data)
+python main.py analysis
+
+# Individual modules
+python training.py
+python test.py
+python optogenetics.py
+python perceptualpolicy.py
+```
+
+### Programmatic Usage
 
 ```python
-import numpy as np
-from agents.pathway_agents import pathway_agents_v11
-from analysis import PathwayAnalysis
+from training import train_agent
+from testing_control import run_control_test
+from optogenetics import run_dls_perturbation_experiments
+from perceptualpolicy import run_perceptual_policy_analysis
 
-# Set up parameters
-param = {
-    'n_states': 40,
-    'beta': 1.5,
-    'gamma_v': 0.98,
-    'gamma_dm': 0.98,
-    'n_episodes': 10000,
+# Train agent
+sim_data, tf_m, param = train_agent()
+
+# Run control tests
+test_data = run_control_test(sim_data, tf_m, param)
+
+# Run optogenetics experiments
+dls_results = run_dls_perturbation_experiments(sim_data, tf_m, param, test_data)
+
+# Run perceptual policy analysis
+ppolicy_results = run_perceptual_policy_analysis(sim_data, tf_m, param)
+```
+
+## Data Management
+
+### Automatic Save/Load
+All modules implement automatic data persistence:
+
+```python
+# Check if data exists, load if available
+if not force_rerun and check_data_exists("training_data"):
+    saved_data = load_sim_data("training_data")
+    return saved_data
+
+# Save results after computation
+save_sim_data(results, "training_data")
+```
+
+### Data Files
+- `training_data.pkl` - Training simulation results
+- `control_test_data.pkl` - Control test results
+- `dls_perturbation_data.pkl` - DLS perturbation results
+- `dms_perturbation_data.pkl` - DMS perturbation results
+- `perceptual_policy_data.pkl` - Perceptual policy analysis results
+- `pipeline_summary.pkl` - Complete pipeline summary
+
+## Configuration
+
+### Training Parameters
+Default parameters can be modified in `training.py`:
+
+```python
+def setup_training_parameters():
+    n_eps = 150000  # Training episodes
+    n_test_eps = int(n_eps * 0.7)  # Test episodes
     # ... other parameters
-}
-
-# Run simulation
-agent = pathway_agents_v11(param)
-sim_data = agent.train_agent()
-
-# Analyze results
-analyzer = PathwayAnalysis(sim_data, param)
-results = analyzer.run_full_analysis(agent)
-
-# Access specific analyses
-performance = analyzer.get_performance_metrics(agent)
-pathway_contrib = analyzer.analyze_pathway_contributions(sim_data)
 ```
 
-### Individual Analysis Components
+### Force Rerun Options
+Each module supports force rerun flags:
 
 ```python
-# Behavioral analysis
-behavioral = analyzer.behavioral
-psychometric_data = behavioral.get_psychometric_data(...)
-breaking_fixation_data = behavioral.get_breaking_fixation_data(...)
-hazard_data = behavioral.calculate_hazard(...)
+# Force retraining
+train_agent(force_retrain=True)
 
-# Neural analysis
-neural = analyzer.neural
-dls_activity = neural.sample_action_preferences_DLS(...)
-dms_activity = neural.sample_action_preferences_DMS(...)
-latent_states = neural.extract_latent_states(...)
+# Force retesting
+run_control_test(sim_data, tf_m, param, force_retest=True)
 
-# Plotting
-plotting = analyzer.plotting
-fig1 = plotting.plot_psychometric_curve(...)
-fig2 = plotting.plot_breaking_fixations(...)
-fig3 = plotting.plot_neural_activity_dms_dls(...)
+# Force rerun optogenetics
+run_dls_perturbation_experiments(..., force_rerun=True)
 ```
-
-## Key Improvements
-
-### 1. Modularity
-- Code is split into logical, focused modules
-- Each module has a single responsibility
-- Easy to test and maintain individual components
-
-### 2. Readability
-- Clear, descriptive function and class names
-- Comprehensive docstrings
-- Consistent code style and organization
-
-### 3. Reusability
-- Functions can be used independently
-- Modular design allows for easy extension
-- Clean interfaces between components
-
-### 4. Maintainability
-- Separation of concerns
-- Reduced code duplication
-- Clear dependency structure
-
-### 5. Documentation
-- Comprehensive README
-- Inline documentation
-- Example usage patterns
-
-## Analysis Capabilities
-
-### Behavioral Analysis
-- Psychometric curve fitting
-- Breaking fixation analysis
-- Hazard function calculation
-- Choice behavior analysis
-- Real-time state mapping
-
-### Neural Activity Analysis
-- Action preference sampling for DLS and DMS pathways
-- Pathway contribution analysis
-- Latent state extraction (SVD, NMF)
-- Convergence analysis
-- Neural data export to CSV
-
-### Visualization
-- Comprehensive grid plots
-- Individual analysis plots
-- Neural activity visualizations
-- Transfer function plots
-- Convergence plots
-
-### Data Management
-- Simulation data saving/loading
-- Parameter management
-- CSV export capabilities
-- Timestamped result directories
-
-## Dependencies
-
-The code requires the following Python packages:
-- numpy
-- matplotlib
-- scipy
-- pandas
-- scikit-learn (for dimensionality reduction)
-
-## Original Source
-
-This code was extracted and modularized from:
-- **Original file**: `pathways/advantage_updating_v49-finding_DMS_latent.ipynb`
-- **Original analysis class**: `pathway_analysis_v6`
-- **Original agent class**: `pathway_agents_v11`
-
-## Future Extensions
-
-The modular design makes it easy to:
-- Add new analysis methods
-- Implement additional plotting functions
-- Extend behavioral or neural analysis capabilities
-- Add new agent types or environments
-- Integrate with other analysis pipelines
-
-## Contact
-
-For questions about the code structure or usage, refer to the original research documentation or the inline code comments.
