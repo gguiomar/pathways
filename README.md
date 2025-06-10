@@ -1,4 +1,4 @@
-# Pathways - Modelling direct and indirect pathway circuits in multiple corticostriatal loops
+# Pathways - Code for the Paper: Action suppression reveals opponent parallel control via striatal circuits
 
 ## Overview
 
@@ -10,7 +10,7 @@ This repository contains a version of the pathways analysis codebase from the pa
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/gguiomar/pathways/tree/main
    cd pathways
    ```
 
