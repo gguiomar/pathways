@@ -3,6 +3,9 @@
 simulation_data/
 simulation_data/*.pkl
 
+# Methods directory (contains large files)
+methods/
+
 # Python cache files
 __pycache__/
 *.py[cod]
