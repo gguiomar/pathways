@@ -1,8 +1,14 @@
-# Pathways - Code for the Paper: Action suppression reveals opponent parallel control via striatal circuits
+# Simulation Code for the Paper: Action suppression reveals opponent parallel control via striatal circuits
 
 ## Overview
 
-This repository contains a version of the pathways analysis codebase from the paper XXXX.
+This repository contains a version of the pathways analysis codebase from the paper:
+
+```bash
+Action suppression reveals opponent parallel control via striatal circuits
+BF Cruz, G Guiomar, S Soares, A Motiwala, CK Machens, JJ Paton
+Nature 607 (7919), 521-526
+```
 
 ## Installation
 
