@@ -20,10 +20,7 @@ import datetime
 from IPython.display import clear_output, display
 from numpy import linalg as LA
 
-try:
-    from tqdm.notebook import tqdm
-except ImportError:
-    from tqdm import tqdm
+from tqdm import tqdm
 
 from matplotlib import rc
 

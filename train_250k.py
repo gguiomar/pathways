@@ -1,6 +1,6 @@
 """
-Training module for pathway agents.
-Handles the training process and can be called independently.
+Training script for 250,000 episodes.
+Modified version of training.py to run extended training.
 """
 
 import numpy as np
@@ -20,7 +20,10 @@ import datetime
 from IPython.display import clear_output, display
 from numpy import linalg as LA
 
-from tqdm import tqdm
+try:
+    from tqdm.notebook import tqdm
+except ImportError:
+    from tqdm import tqdm
 
 from matplotlib import rc
 
@@ -38,14 +41,14 @@ plt.rcParams['xtick.major.width'] = 2
 plt.rcParams['ytick.major.size'] = 4
 plt.rcParams['ytick.major.width'] = 2
 
-def setup_training_parameters():
+def setup_training_parameters_250k():
     """
-    Set up training parameters for the pathway agents.
+    Set up training parameters for 250,000 episodes.
     
     Returns:
         dict: Training parameters
     """
-    # Training episodes
+    # Training episodes - MODIFIED FOR 250K
     n_eps = 250000
     n_test_eps = int(n_eps * 0.7)
 
@@ -75,7 +78,7 @@ def setup_training_parameters():
     dp_dms_param = [11.5, 1, 0.9, 1, -3.5, 0]
     ip_dms_param = [11.5, 1, 0.9, 1, -3.5, 0]
 
-    train_sim_notes = "Training with split DMS and symmetric transfer functions"
+    train_sim_notes = "Training with 250,000 episodes - split DMS and symmetric transfer functions"
 
     param = {
         'n_states': 40, 
@@ -98,28 +101,16 @@ def setup_training_parameters():
     
     return param
 
-def train_agent(param=None, force_retrain=False):
+def train_agent_250k():
     """
-    Train the pathway agent.
+    Train the pathway agent for 250,000 episodes.
     
-    Args:
-        param: Training parameters (if None, uses default)
-        force_retrain: If True, forces retraining even if saved data exists
-        
     Returns:
         tuple: (sim_data, tf_m, param)
     """
-    if param is None:
-        param = setup_training_parameters()
+    param = setup_training_parameters_250k()
     
-    # Check if training data already exists
-    if not force_retrain and check_data_exists("training_data"):
-        print("Loading existing training data...")
-        saved_data = load_sim_data("training_data")
-        if saved_data is not None:
-            return saved_data['sim_data'], saved_data['tf_m'], saved_data['param']
-    
-    print("Starting training...")
+    print(f"Starting training for {param['n_episodes']} episodes...")
     
     # Initialize agent
     tf_m = pathway_agents_v11(param)
@@ -152,7 +143,8 @@ def train_agent(param=None, force_retrain=False):
     # Plot transfer function
     tf_fig2 = tf_m.plot_transfer_function([5, 3])
 
-    # Train the agent
+    # Train the agent with force retrain
+    print("Training in progress...")
     sim_data = tf_m.train_agent()
     
     # Save training data
@@ -161,13 +153,14 @@ def train_agent(param=None, force_retrain=False):
         'tf_m': tf_m,
         'param': param
     }
-    save_sim_data(training_data, "training_data")
+    save_sim_data(training_data, "training_data_250k")
     
+    print("Training completed and data saved!")
     return sim_data, tf_m, param
 
-def plot_training_results(sim_data, param, tf_m, save_plots=True):
+def plot_training_results_250k(sim_data, param, tf_m, save_plots=True):
     """
-    Plot training results.
+    Plot training results for 250k training.
     
     Args:
         sim_data: Simulation data from training
@@ -191,9 +184,9 @@ def plot_training_results(sim_data, param, tf_m, save_plots=True):
     
     return f1
 
-def plot_neural_activity(sim_data, tf_m, save_plots=True):
+def plot_neural_activity_250k(sim_data, tf_m, save_plots=True):
     """
-    Plot neural activity during training.
+    Plot neural activity during 250k training.
     
     Args:
         sim_data: Simulation data from training
@@ -216,15 +209,23 @@ def plot_neural_activity(sim_data, tf_m, save_plots=True):
     return f2
 
 if __name__ == "__main__":
-    # Run training if script is executed directly
-    print("Running training pipeline...")
+    # Run 250k training
+    print("="*60)
+    print("TRAINING PATHWAY AGENT FOR 250,000 EPISODES")
+    print("="*60)
     
     # Train agent
-    sim_data, tf_m, param = train_agent()
+    sim_data, tf_m, param = train_agent_250k()
     
     # Plot results
-    f1 = plot_training_results(sim_data, param, tf_m)
-    f2 = plot_neural_activity(sim_data, tf_m)
+    print("\nGenerating plots...")
+    f1 = plot_training_results_250k(sim_data, param, tf_m)
+    f2 = plot_neural_activity_250k(sim_data, tf_m)
     
     plt.show()
-    print("Training completed successfully!")
+    print("\n" + "="*60)
+    print("250K TRAINING COMPLETED SUCCESSFULLY!")
+    print("Plots saved to:")
+    print("- plots/training_results.png")
+    print("- plots/neural_activity.png")
+    print("="*60)

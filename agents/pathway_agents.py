@@ -7,11 +7,7 @@ import sys
 import os
 import math
 import pandas as pd
-# Import tqdm with Jupyter notebook support
-try:
-    from tqdm.notebook import tqdm
-except ImportError:
-    from tqdm import tqdm
+from tqdm import tqdm
 
 import time
 

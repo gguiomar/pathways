@@ -167,3 +167,11 @@ run_control_test(sim_data, tf_m, param, force_retest=True)
 # Force rerun optogenetics
 run_dls_perturbation_experiments(..., force_rerun=True)
 ```
+
+## Results
+
+### Training Results
+![Training Results](plots/training_results.png)
+
+### Neural Activity
+![Neural Activity](plots/neural_activity.png)
