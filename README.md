@@ -1,4 +1,4 @@
-# Simulation Code for the Paper: Action suppression reveals opponent parallel control via striatal circuits
+# Methods: Action suppression reveals opponent parallel control via striatal circuits
 
 ## Overview
 
